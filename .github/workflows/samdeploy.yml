@@ -30,4 +30,4 @@ jobs:
 
       - name: Update Lambda
         run: |
-          sam deploy --debug
+          sam deploy --debug --no-confirm-changeset
