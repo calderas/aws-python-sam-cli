@@ -24,6 +24,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Build Lambda
+        run: |
+          sam build --use-container
+
       - name: Update Lambda
         run: |
           sam deploy --debug
