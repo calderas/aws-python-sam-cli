@@ -24,6 +24,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Copy files to S3 with the AWS CLI
+      - name: Update Lambda
         run: |
           sam deploy --debug
