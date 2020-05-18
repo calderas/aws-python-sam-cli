@@ -1,6 +1,12 @@
 import json
-
 # import requests
+import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
+
+sentry_sdk.init(
+    dsn="https://632ab7513da4474997fc1d70e962e961@o394662.ingest.sentry.io/5245069",
+    integrations=[AwsLambdaIntegration()]
+)
 
 
 def lambda_handler(event, context):
