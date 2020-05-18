@@ -23,7 +23,7 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-      
+      AutoPublishAlias: live
       DeploymentPreference:
         Type: Canary10Percent10Minutes 
         Alarms:
