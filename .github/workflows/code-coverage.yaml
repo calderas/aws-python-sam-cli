@@ -1,23 +1,26 @@
-name: Python Master Workflow
-on:
-  push:
-    branches:
-      - 'master'
+name: Code Coverage Workflow
+on: [pull_request]
 jobs:
   codecov:
     name: Codecov Workflow
     runs-on: ubuntu-18.04
     
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/cache@v1
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@master
         with:
-          python-version: 3.8
+          python-version: 3.7
       - name: Generate coverage report
         run: |
-          pip install pytest pytest-mock
-          pip install pytest-cov
+          pip install pytest pytest-mock pytest-cov
+          pip install -r hello_world/requirements.txt
           python -m pytest tests/ -v --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
