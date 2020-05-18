@@ -2,6 +2,7 @@
 
 ![AWS Sam Deploy](https://github.com/calderas/aws-python-sam-test/workflows/AWS%20Sam%20Deploy/badge.svg?branch=master)
 ![Test/Lint](https://github.com/calderas/aws-python-sam-test/workflows/Python%20package/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/calderas/aws-python-sam-test/branch/master/graph/badge.svg?token=MBH4O0Z78B)](https://codecov.io/gh/calderas/aws-python-sam-test)
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
