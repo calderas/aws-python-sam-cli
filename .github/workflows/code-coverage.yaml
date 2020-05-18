@@ -1,8 +1,5 @@
 name: Code Coverage Workflow
-on:
-  push:
-    branches:
-      - 'master'
+on: [pull_request]
 jobs:
   codecov:
     name: Codecov Workflow
