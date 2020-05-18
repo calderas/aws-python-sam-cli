@@ -1,6 +1,12 @@
 import json
+import requests
+import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 
-# import requests
+sentry_sdk.init(
+    dsn="https://632ab7513da4474997fc1d70e962e961@o394662.ingest.sentry.io/5245069",
+    integrations=[AwsLambdaIntegration()]
+)
 
 
 def lambda_handler(event, context):
@@ -25,13 +31,11 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
-
-    #     raise e
+    try:
+        ip = requests.get("http://checkip.amazonaws.com/")
+    except requests.RequestException as e:
+        print(e)
+        raise e
 
     return {
         "statusCode": 200,
