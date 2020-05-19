@@ -77,7 +77,6 @@ Resources:
       Period: '60'
       Statistic: Sum
       Threshold: '1'
-
         
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
