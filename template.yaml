@@ -25,7 +25,7 @@ Resources:
             Method: get
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: AllAtOnce 
+        Type: Linear10PercentEvery1Minute 
         Alarms:
           # A list of alarms that you want to monitor
           - !Ref AliasErrorMetricGreaterThanZeroAlarm
@@ -35,41 +35,49 @@ Resources:
           # PreTraffic: !Ref PreTrafficLambdaFunction
           # PostTraffic: !Ref PostTrafficLambdaFunction
           
-AliasErrorMetricGreaterThanZeroAlarm:
-  Type: "AWS::CloudWatch::Alarm"
-  Properties:
-    AlarmDescription: Lambda Function Error > 0
-    ComparisonOperator: GreaterThanThreshold
-    Dimensions:
-      - Name: Resource
-        Value: !Sub "${HelloWorldFunction}:live"
-      - Name: FunctionName
-        Value: !Ref HelloWorldFunction
-    EvaluationPeriods: 2
-    MetricName: Errors
-    Namespace: AWS/Lambda
-    Period: 60
-    Statistic: Sum
-    Threshold: 0
-    
-LatestVersionErrorMetricGreaterThanZeroAlarm:
-  Type: "AWS::CloudWatch::Alarm"
-  Properties:
-    AlarmDescription: Lambda Function Error > 0
-    ComparisonOperator: GreaterThanThreshold
-    Dimensions:
-      - Name: Resource
-        Value: !Sub "${HelloWorldFunction}:live"
-      - Name: FunctionName
-        Value: !Ref HelloWorldFunction
-      - Name: ExecutedVersion
-        Value: !GetAtt HelloWorldFunction.Version.Version
-    EvaluationPeriods: 2
-    MetricName: Errors
-    Namespace: AWS/Lambda
-    Period: 60
-    Statistic: Sum
-    Threshold: 0
+  # CW Alarm to monitor the new Lambda version for errors
+  AliasErrorMetricGreaterThanZeroAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: HelloWorldFunction
+    Properties:
+      AlarmName: !Sub sam-test-ec-AliasErrorMetricGreaterThanZeroAlarm-${HelloWorldFunction}
+      AlarmDescription: "pre-deployment alarm to check for errors in the function"
+      #AlarmActions:
+      #  - !Ref AlarmTopic
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref HelloWorldFunction
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: '60'
+      Statistic: Sum
+      Threshold: '1'
+
+  # CW Alarm to monitor the new Lambda version for errors
+  LatestVersionErrorMetricGreaterThanZeroAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: HelloWorldFunction
+    Properties:
+      AlarmName: !Sub sam-test-ec-LatestVersionErrorMetricGreaterThanZeroAlarm-${HelloWorldFunction}
+      AlarmDescription: "pre-deployment alarm to check for errors in the function"
+      #AlarmActions:
+      #  - !Ref AlarmTopic
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: missing
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref HelloWorldFunction
+        - Name: Resource
+          Value: !Join [":", [!Ref HelloWorldFunction, !Select ["7", !Split [":", !Ref HelloWorldFunction.Version]]]]
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: '60'
+      Statistic: Sum
+      Threshold: '1'
+
         
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
