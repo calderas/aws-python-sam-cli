@@ -29,7 +29,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       
-      -name: Sentry Release
+      - name: Sentry Release
         run: |
           # Install Sentry CLI
           curl -sL https://sentry.io/get-cli/ | bash
