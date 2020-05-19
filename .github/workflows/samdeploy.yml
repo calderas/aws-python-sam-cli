@@ -12,6 +12,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      SENTRY_DEPLOY_ENVIRONMENT: ${{ secrets.SENTRY_DEPLOY_ENVIRONMENT }} 
     steps:
 
       - name: Checkout
@@ -23,6 +28,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+      
+      -name: Sentry Release
+        run: |
+          # Install Sentry CLI
+          curl -sL https://sentry.io/get-cli/ | bash
+          
+          # Create new Sentry release
+          export SENTRY_RELEASE=$(sentry-cli releases propose-version)
+          sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+          sentry-cli releases set-commits --auto $SENTRY_RELEASE
+          sentry-cli releases finalize $SENTRY_RELEASE
+          
+          # Create new deploy for this Sentry release
+          sentry-cli releases deploys $SENTRY_RELEASE new -e $SENTRY_DEPLOY_ENVIRONMENT
 
       - name: Build Lambda
         run: |
