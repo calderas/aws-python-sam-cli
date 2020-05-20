@@ -47,6 +47,8 @@ Resources:
     Properties:
       CodeUri: hello_world/
       Handler: app.lambda_handler
+      Layers:
+        - !Ref HelloWorldDepLayer
       Runtime: python3.7
       Events:
         HelloWorld:
@@ -74,7 +76,17 @@ Resources:
           # Validation Lambda functions that are run before & after traffic shifting
           # PreTraffic: !Ref PreTrafficLambdaFunction
           # PostTraffic: !Ref PostTrafficLambdaFunction
-          
+
+  HelloWorldDepLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Dependencies for sam app
+      ContentUri: 'dependencies/'
+      CompatibleRuntimes:
+        - python3.7
+    Metadata:
+      BuildMethod: python3.7
+
   # CW Alarm to monitor the new Lambda version for errors
   AliasErrorMetricGreaterThanZeroAlarm:
     Type: AWS::CloudWatch::Alarm
