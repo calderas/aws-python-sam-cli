@@ -11,6 +11,37 @@ Globals:
     Timeout: 3
 
 Resources:
+  CFDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: 'true'
+        Comment: Lambda@Edge SAM Sample
+        DefaultRootObject: index.html
+        Origins:
+          -
+            Id: MyOrigin
+            DomainName: aws.amazon.com # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-origin.html
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: match-viewer
+        DefaultCacheBehavior:
+          TargetOriginId: MyOrigin
+          # Lambda@Edge configuration requires a function version not alias
+          LambdaFunctionAssociations:
+            - 
+              EventType: origin-request
+              # <SAM-Function.Version> provides {FunctionARN}:{Version} which is exactly what Cloudfront expects
+              # SAM Benefit here is upon function changes this function version will also be updated in Cloudfront
+              LambdaFunctionARN: !Ref HelloWorldFunction.Version
+          ForwardedValues:
+            QueryString: 'false'
+            Headers:
+              - Origin
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -26,6 +57,15 @@ Resources:
             Path: /hello
             Method: get
       AutoPublishAlias: live
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: "sts:AssumeRole"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "edgelambda.amazonaws.com"
       DeploymentPreference:
         Type: Linear10PercentEvery1Minute 
         Alarms:
@@ -98,9 +138,20 @@ Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
+  
+  HelloWorldFunctionSampleVersion: 
+    Description: Lambda@Edge Sample Function ARN with Version
+    Value: !Ref HelloWorldFunction.Version
+
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
+  
+  CFDistribution: 
+    Description: Cloudfront Distribution Domain Name
+    Value: !GetAtt CFDistribution.DomainName
+

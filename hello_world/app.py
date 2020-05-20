@@ -33,15 +33,20 @@ def lambda_handler(event, context):
 
     try:
         ip = requests.get("http://checkip.amazonaws.com/")
-        sentry_sdk.capture_exception(Exception("This is an example of an error message."))
+        sentry_sdk.capture_exception(
+            Exception("This is an example of an error message #2."))
     except requests.RequestException as e:
         print(e)
         raise e
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
+    response = {
+        'statusCode': 200,
+        'headers': {
+            "Content-Type": "application/json"
+        },
+        'body': json.dumps({
             "message": "hello world again",
             "location": ip.text.replace("\n", "")
-        }),
+        })
     }
+    return response
