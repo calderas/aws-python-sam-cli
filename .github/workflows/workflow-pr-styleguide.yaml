@@ -20,7 +20,7 @@ jobs:
       - name: Run unit tests
         run: |
           pip install pytest pytest-mock
-          pip install -r dependencies/python/requirements.txt -t dependencies/python/lib/python3.7/site-packages/
+          pip install -r dependencies/requirements.txt -t dependencies/python/lib/python3.7/site-packages/
           python -m pytest tests/ -v
       - name: Wemake Python Stylguide
         uses: wemake-services/wemake-python-styleguide@0.13.4
