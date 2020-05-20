@@ -80,13 +80,12 @@ Resources:
   HelloWorldDepLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-        LayerName: sam-app-dependencies
-        Description: Dependencies for sam app [temp-units-conv]
-        ContentUri: dependencies/
-        CompatibleRuntimes:
-          - python3.7
-        LicenseInfo: 'MIT'
-        RetentionPolicy: Retain
+      Description: Dependencies for sam app
+      ContentUri: 'dependencies/'
+      CompatibleRuntimes:
+        - python3.7
+    Metadata:
+      BuildMethod: python3.7
 
   # CW Alarm to monitor the new Lambda version for errors
   AliasErrorMetricGreaterThanZeroAlarm:
